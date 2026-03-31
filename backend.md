@@ -23,7 +23,7 @@ The Next.js app pages are the frontend team's concern. You only need to deliver 
 | ML pipeline | `pandas`, `scikit-learn`, `joblib` |
 | Env vars | `python-dotenv` |
 | Job scheduling | Local cron (Mac) |
-| Scoring API route | Next.js App Router API route (`app/api/score/route.ts`) |
+| Scoring API route | Next.js App Router API route (`web/app/api/score/route.ts`) |
 
 ---
 
@@ -43,10 +43,11 @@ deployment/
     train_model.py
     run_inference.py
   logs/
-  app/
-    api/
-      score/
-        route.ts                ← scoring API route (see Phase 5)
+  web/                          ← Next.js app lives here
+    app/
+      api/
+        score/
+          route.ts              ← scoring API route (see Phase 5)
   .env.local                    ← never commit
   .env.example                  ← commit this
   .gitignore
@@ -178,7 +179,7 @@ def ensure_predictions_table(conn):
         order_id INTEGER PRIMARY KEY,
         late_delivery_probability REAL,
         predicted_late_delivery INTEGER,
-        prediction_timestamp TEXT
+        prediction_timestamp TIMESTAMPTZ
     )
     """)
     conn.commit()
@@ -432,7 +433,7 @@ def run_inference():
     probs = model.predict_proba(X_live)[:, 1]
     preds = model.predict(X_live)
 
-    ts = datetime.utcnow().isoformat()
+    ts = datetime.utcnow()  # psycopg2 maps Python datetime → TIMESTAMPTZ natively
     out_rows = [
         (int(oid), float(p), int(yhat), ts)
         for oid, p, yhat in zip(df_live["order_id"], probs, preds)
@@ -538,7 +539,10 @@ The `/scoring` page (built by the frontend team) needs a backend API route to tr
 
 **Important Vercel limitation:** Vercel cannot execute local Python scripts. The `/scoring` button works in local development only. In production, scoring is handled automatically by the cron job. The API route should communicate this clearly when deployed.
 
-### 5.1 — Create `app/api/score/route.ts`
+### 5.1 — Create `web/app/api/score/route.ts`
+
+> The Next.js app lives in `web/`, so `process.cwd()` resolves to `web/` at runtime.
+> Go up one level (`..`) to reach the project root where `.venv/` and `jobs/` live.
 
 ```typescript
 import { NextResponse } from "next/server";
@@ -555,7 +559,8 @@ export async function POST() {
     );
   }
 
-  const projectRoot = path.resolve(process.cwd());
+  // process.cwd() is web/ — step up to project root for Python + jobs
+  const projectRoot = path.resolve(process.cwd(), "..");
   const pythonPath  = path.join(projectRoot, ".venv", "bin", "python");
   const scriptPath  = path.join(projectRoot, "jobs", "run_inference.py");
 

@@ -116,19 +116,19 @@ LIMIT 50;
 
 ---
 
-## 6. “Run Scoring” — design options (must match Chapter 17 behavior)
+## 6. “Run Scoring” — decided approach
 
-Chapter 17 describes a button that **runs inference** (equivalent to `run_inference.py`) and then **refreshes** the queue. On Vercel, pick **one** of these patterns:
+The backend API route at `POST /api/score` (`web/app/api/score/route.ts`) handles this:
 
-| Option | How it works | Pros / cons |
-|--------|----------------|-------------|
-| **A. Secure API + external worker** | Next.js Route Handler calls **HTTPS** on a small service (e.g. Railway/Render/Fly) or **Supabase Edge Function** that runs Python or invokes your script. | Strong match to “button triggers job”; requires hosting the worker and secrets. |
-| **B. GitHub Actions `workflow_dispatch`** | Button hits a Route Handler that uses a **GitHub token** to dispatch a workflow that runs `run_inference.py` on a runner with secrets. | No extra app server; depends on GitHub + queue latency. |
-| **C. Cron-only inference + refresh button** | Cron (per Chapter 17) runs inference every 5 minutes; the button only **revalidates** data (`router.refresh()` / `revalidatePath`) and optionally shows **last `prediction_timestamp`**. | Easiest on Vercel; button does **not** truly “run” inference unless you rename the requirement to “refresh after scheduled scoring”. **Verify this meets the rubric.** |
+- **Local development:** the route calls `execFile` to run `jobs/run_inference.py` directly and returns the output message.
+- **Production (Vercel):** the route returns a 200 immediately — *”Scoring runs automatically via cron in production.”* The cron job (every 5 minutes, per Chapter 17) handles inference; the button triggers a data refresh on the client side.
 
-**Recommendation for the course deliverable:** implement **(A)** or **(B)** if the grader expects a genuine trigger; otherwise document the choice in the README and implement **(C)** only with explicit team/instructor agreement.
+The `/scoring` page should:
+1. Call `POST /api/score` on button click.
+2. Display the response message.
+3. After a successful response, refresh the priority queue data (`router.refresh()` or revalidate `/warehouse/priority`).
 
-**Never:** run sklearn inference inside the Next.js Node process unless you have a dedicated, supported Python runtime path—keep separation of concerns as in Chapter 17.
+**Never** run sklearn inference inside the Next.js Node process — keep separation of concerns as in Chapter 17.
 
 ---
 
@@ -136,7 +136,7 @@ Chapter 17 describes a button that **runs inference** (equivalent to `run_infere
 
 ### Phase F0 — Repository & env
 
-- [ ] Add Next.js app (App Router) in repo root or `web/` (team choice); align imports and Vercel “Root Directory”.
+- [ ] Add Next.js app (App Router) in the `web/` folder; set Vercel “Root Directory” to `web`.
 - [ ] Copy env pattern from `PLAN.md`: `.env.example` (public var names only), `.env.local` for local secrets (gitignored).
 - [ ] Vercel project: set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
@@ -153,7 +153,7 @@ Chapter 17 describes a button that **runs inference** (equivalent to `run_infere
 
 ### Phase F3 — Orders
 
-- [ ] `/place-order`: product picker, quantities, server action or Route Handler wrapping a **transaction** (insert order, then items).
+- [ ] `/place-order`: product picker, quantities, server action or Route Handler wrapping a **transaction** (insert order, then items). **Always set `fulfilled = 0`** on new order inserts — the inference job filters `WHERE fulfilled = 0` to find orders to score. New orders will not appear in the priority queue without this.
 - [ ] `/orders` and optional `/orders/[order_id]`: filtered by `customer_id` from cookie.
 
 ### Phase F4 — Warehouse priority queue
@@ -162,8 +162,10 @@ Chapter 17 describes a button that **runs inference** (equivalent to `run_infere
 
 ### Phase F5 — Run Scoring + refresh
 
-- [ ] Implement chosen option from §6; on success, refresh priority data (revalidate or client refresh).
-- [ ] Surface errors (inference failed, worker timeout) in the UI.
+- [ ] Add a "Run Scoring" button that calls `POST /api/score` (provided by backend).
+- [ ] On success, refresh priority queue data (`router.refresh()` or `revalidatePath('/warehouse/priority')`).
+- [ ] Display the response message (e.g. "Inference complete. Predictions written: N" in dev, or the cron notice in production).
+- [ ] Surface errors (non-200 response) in the UI.
 
 ### Phase F6 — Deploy & verify
 
