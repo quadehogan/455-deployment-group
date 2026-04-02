@@ -8,7 +8,7 @@ import { MOCK_PRIORITY_QUEUE } from "@/lib/mock-data";
 export default function WarehousePriorityPage() {
   return (
     <main className="page-wide">
-      <h1 className="page-heading">Late delivery priority queue</h1>
+      <h1 className="page-heading">Late Delivery Priority Queue</h1>
       <p className="text-muted-block">
         Unfulfilled orders sorted by{" "}
         <code className="inline-code">late_delivery_probability</code> descending (demo

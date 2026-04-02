@@ -19,14 +19,13 @@ export default function ScoringPage() {
 
   return (
     <main className="page">
-      <h1 className="page-heading">Run scoring</h1>
+      <h1 className="page-heading">Run Scoring</h1>
       <p className="text-muted-block">
-        Triggers the same job as <code className="inline-code">run_inference.py</code> (not
-        wired in this demo).
+        Runs the scoring machine learning model found in the jupyter notebook.
       </p>
 
       <button type="button" className="btn-primary" onClick={runScoring}>
-        Run scoring (demo)
+        Run Scoring
       </button>
 
       {status && <p className="message-box">{status}</p>}

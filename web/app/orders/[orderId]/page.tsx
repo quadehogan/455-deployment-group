@@ -17,11 +17,11 @@ export default async function OrderDetailPage({ params }: Props) {
     <main className="page">
       <h1 className="page-heading">Order #{orderId}</h1>
       <p className="text-muted-block">
-        Line items (demo — from mock data keyed by order id).
+        Line Items
       </p>
 
       {lines.length === 0 ? (
-        <p className="text-muted">No line items in the demo for this order.</p>
+        <p className="text-muted">No Line Items</p>
       ) : (
         <ul className="stack">
           {lines.map((row, i) => (

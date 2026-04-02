@@ -53,7 +53,7 @@ export default function DashboardPage() {
     <main className="page">
       <h1 className="page-heading">Dashboard</h1>
       <p className="text-muted-block">
-        Signed in as <strong>{name}</strong> (demo — no password).
+        Signed in as <strong>{name}</strong>.
       </p>
 
       {/* Summary cards: replace with SQL aggregates later */}
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           <div className="stat-value">{orders.length}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Total spend (demo)</div>
+          <div className="stat-label">Total Spend</div>
           <div className="stat-value">${totalSpend}</div>
         </div>
       </div>
