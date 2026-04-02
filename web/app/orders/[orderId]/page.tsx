@@ -14,23 +14,18 @@ export default async function OrderDetailPage({ params }: Props) {
   const lines = MOCK_ORDER_LINES[orderId] ?? [];
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-4 text-xl font-semibold">Order #{orderId}</h1>
-      <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+    <main className="page">
+      <h1 className="page-heading">Order #{orderId}</h1>
+      <p className="text-muted-block">
         Line items (demo — from mock data keyed by order id).
       </p>
 
       {lines.length === 0 ? (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          No line items in the demo for this order.
-        </p>
+        <p className="text-muted">No line items in the demo for this order.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="stack">
           {lines.map((row, i) => (
-            <li
-              key={`${row.product}-${i}`}
-              className="flex justify-between rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600"
-            >
+            <li key={`${row.product}-${i}`} className="order-line">
               <span>
                 {row.product} × {row.qty}
               </span>
@@ -40,8 +35,8 @@ export default async function OrderDetailPage({ params }: Props) {
         </ul>
       )}
 
-      <p className="mt-6 text-sm">
-        <Link href="/orders" className="underline">
+      <p className="footer-links">
+        <Link href="/orders" className="link">
           ← Back to order history
         </Link>
       </p>

@@ -1,31 +1,24 @@
 import Link from "next/link";
 
 const links = [
-  { href: "/select-customer", label: "Select customer" },
+  { href: "/select-customer", label: "Select Customer" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/place-order", label: "Place order" },
-  { href: "/orders", label: "Order history" },
-  { href: "/warehouse/priority", label: "Priority queue" },
-  { href: "/scoring", label: "Run scoring" },
+  { href: "/place-order", label: "Place Order" },
+  { href: "/orders", label: "Order History" },
+  { href: "/warehouse/priority", label: "Priority Queue" },
+  { href: "/scoring", label: "Run Scoring" },
 ] as const;
 
 export function ShopNav() {
   return (
-    <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-3 px-4 py-3">
-        <Link
-          href="/select-customer"
-          className="font-semibold text-zinc-900 dark:text-zinc-50"
-        >
+    <header className="nav">
+      <div className="nav-inner">
+        <Link href="/select-customer" className="nav-brand">
           Shop (IS 455)
         </Link>
-        <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <nav className="nav-links">
           {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="text-zinc-600 underline-offset-4 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
+            <Link key={href} href={href} className="nav-link">
               {label}
             </Link>
           ))}
