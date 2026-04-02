@@ -17,20 +17,20 @@ export default function DashboardPage() {
 
   if (!ready) {
     return (
-      <main className="mx-auto max-w-lg p-6">
-        <h1 className="mb-4 text-xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
+      <main className="page">
+        <h1 className="page-heading">Dashboard</h1>
+        <p className="text-muted">Loading…</p>
       </main>
     );
   }
 
   if (customerId === null) {
     return (
-      <main className="mx-auto max-w-lg p-6">
-        <h1 className="mb-4 text-xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <main className="page">
+        <h1 className="page-heading">Dashboard</h1>
+        <p className="text-muted">
           No customer selected.{" "}
-          <Link href="/select-customer" className="underline">
+          <Link href="/select-customer" className="link">
             Choose a customer
           </Link>
           .
@@ -50,37 +50,32 @@ export default function DashboardPage() {
     .toFixed(2);
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-4 text-xl font-semibold">Dashboard</h1>
-      <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-        Signed in as <strong>{name}</strong> (demo — no password).
+    <main className="page">
+      <h1 className="page-heading">Dashboard</h1>
+      <p className="text-muted-block">
+        Signed in as <strong>{name}</strong>.
       </p>
 
       {/* Summary cards: replace with SQL aggregates later */}
-      <div className="mb-6 grid grid-cols-2 gap-3 text-sm">
-        <div className="rounded border border-zinc-300 p-3 dark:border-zinc-600">
-          <div className="text-zinc-500 dark:text-zinc-400">Orders</div>
-          <div className="text-lg font-semibold">{orders.length}</div>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-label">Orders</div>
+          <div className="stat-value">{orders.length}</div>
         </div>
-        <div className="rounded border border-zinc-300 p-3 dark:border-zinc-600">
-          <div className="text-zinc-500 dark:text-zinc-400">Total spend (demo)</div>
-          <div className="text-lg font-semibold">${totalSpend}</div>
+        <div className="stat-card">
+          <div className="stat-label">Total Spend</div>
+          <div className="stat-value">${totalSpend}</div>
         </div>
       </div>
 
-      <h2 className="mb-2 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-        Recent orders
-      </h2>
+      <h2 className="section-heading">Recent orders</h2>
       {recent.length === 0 ? (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">No orders yet.</p>
+        <p className="text-muted">No orders yet.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="stack">
           {recent.map((o) => (
             <li key={o.orderId}>
-              <Link
-                href={`/orders/${o.orderId}`}
-                className="block rounded border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
-              >
+              <Link href={`/orders/${o.orderId}`} className="link-card-soft">
                 #{o.orderId} · {o.placedAt} · {o.total}
               </Link>
             </li>
@@ -88,12 +83,12 @@ export default function DashboardPage() {
         </ul>
       )}
 
-      <p className="mt-6 text-sm">
-        <Link href="/orders" className="underline">
+      <p className="footer-links">
+        <Link href="/orders" className="link">
           All orders
         </Link>
         {" · "}
-        <Link href="/place-order" className="underline">
+        <Link href="/place-order" className="link">
           Place order
         </Link>
       </p>

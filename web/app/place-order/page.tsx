@@ -28,19 +28,19 @@ export default function PlaceOrderPage() {
 
   if (!ready) {
     return (
-      <main className="mx-auto max-w-lg p-6">
-        <h1 className="mb-4 text-xl font-semibold">Place order</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
+      <main className="page">
+        <h1 className="page-heading">Place order</h1>
+        <p className="text-muted">Loading…</p>
       </main>
     );
   }
 
   if (customerId === null) {
     return (
-      <main className="mx-auto max-w-lg p-6">
-        <h1 className="mb-4 text-xl font-semibold">Place order</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          <Link href="/select-customer" className="underline">
+      <main className="page">
+        <h1 className="page-heading">Place order</h1>
+        <p className="text-muted">
+          <Link href="/select-customer" className="link">
             Choose a customer
           </Link>{" "}
           first.
@@ -50,20 +50,20 @@ export default function PlaceOrderPage() {
   }
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-4 text-xl font-semibold">Place order</h1>
-      <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+    <main className="page">
+      <h1 className="page-heading">Place order</h1>
+      <p className="text-muted-block">
         Customer #{customerId}. Pick a product and quantity.
       </p>
 
-      <form onSubmit={submit} className="space-y-4">
+      <form onSubmit={submit} className="form-stack">
         <div>
-          <label htmlFor="product" className="mb-1 block text-sm font-medium">
+          <label htmlFor="product" className="field-label">
             Product
           </label>
           <select
             id="product"
-            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+            className="field-input"
             value={productId}
             onChange={(e) => setProductId(Number(e.target.value))}
           >
@@ -75,31 +75,24 @@ export default function PlaceOrderPage() {
           </select>
         </div>
         <div>
-          <label htmlFor="qty" className="mb-1 block text-sm font-medium">
+          <label htmlFor="qty" className="field-label">
             Quantity
           </label>
           <input
             id="qty"
             type="number"
             min={1}
-            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+            className="field-input"
             value={qty}
             onChange={(e) => setQty(Number(e.target.value))}
           />
         </div>
-        <button
-          type="submit"
-          className="rounded bg-zinc-900 px-4 py-2 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <button type="submit" className="btn-primary">
           Place order (demo)
         </button>
       </form>
 
-      {message && (
-        <p className="mt-4 rounded border border-zinc-300 p-3 text-sm dark:border-zinc-600">
-          {message}
-        </p>
-      )}
+      {message && <p className="message-box">{message}</p>}
     </main>
   );
 }

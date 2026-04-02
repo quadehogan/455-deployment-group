@@ -18,29 +18,20 @@ export default function ScoringPage() {
   }
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-4 text-xl font-semibold">Run scoring</h1>
-      <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-        Triggers the same job as <code className="text-xs">run_inference.py</code> (not wired in
-        this demo).
+    <main className="page">
+      <h1 className="page-heading">Run Scoring</h1>
+      <p className="text-muted-block">
+        Runs the scoring machine learning model found in the jupyter notebook.
       </p>
 
-      <button
-        type="button"
-        className="rounded bg-zinc-900 px-4 py-2 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        onClick={runScoring}
-      >
-        Run scoring (demo)
+      <button type="button" className="btn-primary" onClick={runScoring}>
+        Run Scoring
       </button>
 
-      {status && (
-        <p className="mt-4 rounded border border-zinc-300 p-3 text-sm dark:border-zinc-600">
-          {status}
-        </p>
-      )}
+      {status && <p className="message-box">{status}</p>}
 
-      <p className="mt-6 text-sm">
-        <Link href="/warehouse/priority" className="underline">
+      <p className="footer-links">
+        <Link href="/warehouse/priority" className="link">
           View priority queue
         </Link>
       </p>
