@@ -39,6 +39,9 @@ yarn-error.log*
 
 # Artifacts are committed intentionally — do NOT ignore artifacts/
 
+# Separate repo — has its own git history
+fraud-api/
+
 # Chapter implementation guides (ch. 17 kept — it's part of the deployment plan)
 chapter_two_implementation.md
 chapter_three_implementation.md
