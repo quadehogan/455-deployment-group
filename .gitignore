@@ -38,3 +38,15 @@ yarn-error.log*
 *.sqlite3
 
 # Artifacts are committed intentionally — do NOT ignore artifacts/
+
+# Chapter implementation guides (ch. 17 kept — it's part of the deployment plan)
+chapter_two_implementation.md
+chapter_three_implementation.md
+chapter_four_implementation.md
+chapter_six_implementation.md
+chapter_seven_implementation.md
+chapter_eight_implementation.md
+chapter_thirteen_implementation.md
+chapter_fourteen_implementation.md
+chapter_fifteen_implementation.md
+chapter_sixteen_implementation.md
