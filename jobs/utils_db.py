@@ -1,10 +1,16 @@
 import psycopg2
 from contextlib import contextmanager
+from urllib.parse import urlparse
 from config import DATABASE_URL
+
+def _parse_url(url):
+    p = urlparse(url)
+    return dict(host=p.hostname, port=p.port, dbname=p.path.lstrip("/"),
+                user=p.username, password=p.password)
 
 @contextmanager
 def pg_conn():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(**_parse_url(DATABASE_URL))
     try:
         yield conn
     finally:
