@@ -4,7 +4,6 @@ import {
   ORDERS_TIME_COL,
   ORDERS_TOTAL_COL,
 } from "@/lib/schema";
-import { createServerSupabase } from "@/lib/supabase/server";
 import { formatCustomerName, type CustomerRow } from "@/lib/queries/shop";
 
 function ident(name: string): string {
@@ -59,13 +58,10 @@ export async function getPriorityQueue(): Promise<PriorityQueueRow[]> {
 
   const byId = new Map<number, CustomerRow>();
   if (ids.length > 0) {
-    const supabase = createServerSupabase();
-    const { data: custs, error } = await supabase
-      .from("customers")
-      .select("*")
-      .in("customer_id", ids);
-    if (error) throw new Error(error.message);
-    for (const c of (custs ?? []) as CustomerRow[]) {
+    const custs = (await db`
+      SELECT * FROM customers WHERE customer_id = ANY(${ids})
+    `) as CustomerRow[];
+    for (const c of custs) {
       byId.set(Number(c.customer_id), c);
     }
   }
