@@ -124,6 +124,30 @@ body.app-body {
   list-style: none;
 }
 
+.customer-select-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.customer-select-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.customer-select-grid li {
+  list-style: none;
+  min-width: 0;
+}
+
+.customer-select-grid .customer-btn {
+  white-space: nowrap;
+}
+
 .form-stack {
   display: flex;
   flex-direction: column;
