@@ -1,30 +1,18 @@
-"use client";
-// Dashboard shows counts and recent orders for whoever is in the `customer_id` cookie.
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { readCustomerIdFromCookie } from "@/lib/customer-cookie";
-import { CUSTOMERS, MOCK_ORDERS } from "@/lib/mock-data";
+import { cookies } from "next/headers";
+import {
+  formatCustomerName,
+  getCustomerById,
+  listOrdersForCustomer,
+  orderTime,
+  orderTotal,
+} from "@/lib/queries/shop";
 
-export default function DashboardPage() {
-  const [ready, setReady] = useState(false);
-  const [customerId, setCustomerId] = useState<number | null>(null);
+export default async function DashboardPage() {
+  const raw = (await cookies()).get("customer_id")?.value;
+  const customerId = raw != null ? Number.parseInt(raw, 10) : NaN;
 
-  useEffect(() => {
-    setCustomerId(readCustomerIdFromCookie());
-    setReady(true);
-  }, []);
-
-  if (!ready) {
-    return (
-      <main className="page">
-        <h1 className="page-heading">Dashboard</h1>
-        <p className="text-muted">Loading…</p>
-      </main>
-    );
-  }
-
-  if (customerId === null) {
+  if (raw == null || Number.isNaN(customerId)) {
     return (
       <main className="page">
         <h1 className="page-heading">Dashboard</h1>
@@ -39,15 +27,11 @@ export default function DashboardPage() {
     );
   }
 
-  const name = CUSTOMERS.find((c) => c.id === customerId)?.name ?? "Customer";
-  const orders = MOCK_ORDERS[customerId] ?? [];
-  // “Recent” = last 3 for demo; real app would ORDER BY date LIMIT 3.
-  const recent = orders.slice(-3).reverse();
-
-  // Parse dollar totals for a fake “total spend” (sum of mock strings — demo only).
-  const totalSpend = orders
-    .reduce((sum, o) => sum + Number.parseFloat(o.total.replace(/[^0-9.]/g, "") || "0"), 0)
-    .toFixed(2);
+  const customer = await getCustomerById(customerId);
+  const orders = await listOrdersForCustomer(customerId);
+  const name = customer ? formatCustomerName(customer) : `Customer #${customerId}`;
+  const totalSpend = orders.reduce((s, o) => s + orderTotal(o), 0);
+  const recent = orders.slice(0, 3);
 
   return (
     <main className="page">
@@ -56,15 +40,14 @@ export default function DashboardPage() {
         Signed in as <strong>{name}</strong>.
       </p>
 
-      {/* Summary cards: replace with SQL aggregates later */}
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-label">Orders</div>
           <div className="stat-value">{orders.length}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Total Spend</div>
-          <div className="stat-value">${totalSpend}</div>
+          <div className="stat-label">Total spend</div>
+          <div className="stat-value">${totalSpend.toFixed(2)}</div>
         </div>
       </div>
 
@@ -74,9 +57,13 @@ export default function DashboardPage() {
       ) : (
         <ul className="stack">
           {recent.map((o) => (
-            <li key={o.orderId}>
-              <Link href={`/orders/${o.orderId}`} className="link-card-soft">
-                #{o.orderId} · {o.placedAt} · {o.total}
+            <li key={o.order_id}>
+              <Link
+                href={`/orders/${o.order_id}`}
+                className="link-card-soft"
+              >
+                #{o.order_id} · {orderTime(o) || "—"} · $
+                {orderTotal(o).toFixed(2)}
               </Link>
             </li>
           ))}

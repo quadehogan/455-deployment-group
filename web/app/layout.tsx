@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: "Customer orders and late-delivery priority queue (skeleton UI)",
 };
 
+/** Data routes call Supabase / Postgres — do not prerender at build time. */
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{

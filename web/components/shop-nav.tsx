@@ -14,7 +14,7 @@ export function ShopNav() {
     <header className="nav">
       <div className="nav-inner">
         <Link href="/select-customer" className="nav-brand">
-          Shop (IS 455)
+        The Ultimate IS 455 Ultra Supreme Deluxe Mega Hyper Galactic Super Store and Monumental Emporium of Limitless Marvels, Technological Triumphs, Outstanding Offers, and Unparalleled Customer Satisfaction Worldwide
         </Link>
         <nav className="nav-links">
           {links.map(({ href, label }) => (

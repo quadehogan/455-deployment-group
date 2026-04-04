@@ -1,37 +1,46 @@
 import Link from "next/link";
-import { MOCK_ORDER_LINES } from "@/lib/mock-data";
+import { getOrderLineItems, productLabel } from "@/lib/queries/shop";
 
 type Props = {
   params: Promise<{ orderId: string }>;
 };
 
-/**
- * Order detail: line items for one `order_id`.
- * Server component — no cookie needed; we only need the URL param.
- */
 export default async function OrderDetailPage({ params }: Props) {
   const { orderId } = await params;
-  const lines = MOCK_ORDER_LINES[orderId] ?? [];
+  const oid = Number.parseInt(orderId, 10);
+  if (Number.isNaN(oid)) {
+    return (
+      <main className="page">
+        <h1 className="page-heading">Order</h1>
+        <p className="text-muted">Invalid order id.</p>
+      </main>
+    );
+  }
+
+  const rows = await getOrderLineItems(oid);
 
   return (
     <main className="page">
       <h1 className="page-heading">Order #{orderId}</h1>
-      <p className="text-muted-block">
-        Line Items
-      </p>
+      <p className="text-muted-block">Line items from the database.</p>
 
-      {lines.length === 0 ? (
-        <p className="text-muted">No Line Items</p>
+      {rows.length === 0 ? (
+        <p className="text-muted">No line items for this order.</p>
       ) : (
         <ul className="stack">
-          {lines.map((row, i) => (
-            <li key={`${row.product}-${i}`} className="order-line">
-              <span>
-                {row.product} × {row.qty}
-              </span>
-              <span>{row.lineTotal}</span>
-            </li>
-          ))}
+          {rows.map(({ line, product }, i) => {
+            const qty = Number(line.quantity ?? line.qty ?? 0);
+            const unit = Number(line.unit_price ?? line.price ?? 0);
+            return (
+              <li key={`${line.product_id}-${i}`} className="order-line">
+                <span>
+                  {(product ? productLabel(product) : `Product #${line.product_id}`)}{" "}
+                  × {qty}
+                </span>
+                <span>${(qty * unit).toFixed(2)}</span>
+              </li>
+            );
+          })}
         </ul>
       )}
 

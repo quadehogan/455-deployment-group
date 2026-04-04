@@ -1,49 +1,68 @@
 import Link from "next/link";
-import { MOCK_PRIORITY_QUEUE } from "@/lib/mock-data";
+import { getPriorityQueue } from "@/lib/queries/priority-queue";
 
 /**
- * Late delivery priority queue: top unfulfilled orders by predicted late probability.
- * Demo uses static rows; real app runs the SQL from `frontend.md` (LIMIT 50).
+ * Late delivery priority queue: orders with predictions, sorted by probability.
+ * Uses raw SQL via `DATABASE_URL` (see `lib/db.ts`).
  */
-export default function WarehousePriorityPage() {
+export default async function WarehousePriorityPage() {
+  let rows: Awaited<ReturnType<typeof getPriorityQueue>> = [];
+  let loadError: string | null = null;
+  try {
+    rows = await getPriorityQueue();
+  } catch (e) {
+    loadError = e instanceof Error ? e.message : "Failed to load queue";
+  }
+
   return (
     <main className="page-wide">
-      <h1 className="page-heading">Late Delivery Priority Queue</h1>
+      <h1 className="page-heading">Late delivery priority queue</h1>
       <p className="text-muted-block">
-        Unfulfilled orders sorted by{" "}
-        <code className="inline-code">late_delivery_probability</code> descending (demo
-        data).
+        Orders with predictions, sorted by{" "}
+        <code className="inline-code">late_delivery_probability</code> (highest
+        first).
       </p>
 
-      <div className="table-wrap">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>P(late)</th>
-              <th>Order time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {MOCK_PRIORITY_QUEUE.map((row) => (
-              <tr key={row.orderId}>
-                <td>
-                  <Link href={`/orders/${row.orderId}`} className="link">
-                    #{row.orderId}
+      {loadError && (
+        <p className="message-box" role="alert">
+          {loadError}
+        </p>
+      )}
+
+      {!loadError && rows.length === 0 && (
+        <p className="text-muted">
+          No scored orders yet. Run inference (jobs or Run scoring) so{" "}
+          <code className="inline-code">order_predictions</code> has rows.
+        </p>
+      )}
+
+      {!loadError && rows.length > 0 && (
+        <ul className="stack">
+          {rows.map((row) => (
+            <li key={row.order_id}>
+              <div className="order-line">
+                <span>
+                  <Link href={`/orders/${row.order_id}`} className="link">
+                    Order #{row.order_id}
                   </Link>
-                </td>
-                <td>{row.customerName}</td>
-                <td>{row.lateDeliveryProbability.toFixed(2)}</td>
-                <td>{row.orderTimestamp}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  {" · "}
+                  {row.customer_name || "—"}
+                </span>
+                <span>
+                  P(late) {(row.late_delivery_probability ?? 0).toFixed(2)}
+                  {" · "}
+                  {row.order_time != null
+                    ? String(row.order_time)
+                    : "—"}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <p className="footer-hint">
-        After inference runs, refresh this page to see updated scores.{" "}
+        After inference runs, refresh this page.{" "}
         <Link href="/scoring" className="link">
           Run scoring
         </Link>
