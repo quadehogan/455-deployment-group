@@ -12,4 +12,17 @@ MODEL_PATH          = ARTIFACTS_DIR / "late_delivery_model.sav"
 MODEL_METADATA_PATH = ARTIFACTS_DIR / "model_metadata.json"
 METRICS_PATH        = ARTIFACTS_DIR / "metrics.json"
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+FRAUD_MODEL_PATH          = ARTIFACTS_DIR / "fraud_model.sav"
+FRAUD_MODEL_METADATA_PATH = ARTIFACTS_DIR / "fraud_model_metadata.json"
+FRAUD_METRICS_PATH        = ARTIFACTS_DIR / "fraud_metrics.json"
+
+FRAUD_API_URL = os.environ.get(
+    "FRAUD_API_URL",
+    "https://fraud-detection-api-production-2465.up.railway.app",
+)
+
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_SERVICE_ROLE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+
+# Optional: direct PostgreSQL (used by ETL/training when available)
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
