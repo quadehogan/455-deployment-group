@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+const FULL_NAME = "The Ultimate IS 455 Ultra Supreme Deluxe Mega Hyper Galactic Super Store and Monumental Emporium of Limitless Marvels, Technological Triumphs, Outstanding Offers, and Unparalleled Customer Satisfaction Worldwide";
+
 const links = [
   { href: "/select-customer", label: "Select Customer" },
   { href: "/dashboard", label: "Dashboard" },
@@ -13,8 +15,8 @@ export function ShopNav() {
   return (
     <header className="nav">
       <div className="nav-inner">
-        <Link href="/select-customer" className="nav-brand">
-        The Ultimate IS 455 Ultra Supreme Deluxe Mega Hyper Galactic Super Store and Monumental Emporium of Limitless Marvels, Technological Triumphs, Outstanding Offers, and Unparalleled Customer Satisfaction Worldwide
+        <Link href="/select-customer" className="nav-brand" title={FULL_NAME}>
+          IS 455 Store
         </Link>
         <nav className="nav-links">
           {links.map(({ href, label }) => (
